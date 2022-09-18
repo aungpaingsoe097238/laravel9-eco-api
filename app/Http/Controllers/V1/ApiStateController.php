@@ -3,10 +3,18 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\State;
 use Illuminate\Http\Request;
 
 class ApiStateController extends Controller
 {
+
+    public function responseType($data,$message,$code){
+        return response()->json([
+            'data' => $data,
+            'message' => $message,
+        ],$code);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,9 @@ class ApiStateController extends Controller
      */
     public function index()
     {
-        //
+        $states = State::all();
+        return $this->responseType($states,'success',200);
+
     }
 
     /**
@@ -25,7 +35,16 @@ class ApiStateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:3|unique:states,name|string'
+        ]);
+
+        $state = new State();
+        $state->name = $request->name;
+        $state->save();
+
+        return $this->responseType($state,'success',200);
+
     }
 
     /**
@@ -36,7 +55,14 @@ class ApiStateController extends Controller
      */
     public function show($id)
     {
-        //
+        $state = State::find($id);
+
+        if(!$state){
+            return response()->json([],403);
+        }
+
+        return $this->responseType($state,'success',200);
+
     }
 
     /**
@@ -48,7 +74,20 @@ class ApiStateController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $state = State::find($id);
+
+        if(!$state){
+            return response()->json([],403);
+        }
+
+        $request->validate([
+            'name' => 'required|unique:states,name,'.$state->id.'|min:3'
+        ]);
+
+        $state->name = $request->name;
+        $state->update();
+
+        return $this->responseType($state,'success',200);
     }
 
     /**
@@ -59,6 +98,9 @@ class ApiStateController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $state = State::find($id);
+        $state->delete();
+
+        return $this->responseType($state,'Data Successfully Deleted',200);
     }
 }

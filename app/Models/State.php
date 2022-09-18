@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class State extends Model
 {
     use HasFactory;
+
+    protected $with = ['customers'];
+
+    public function customers(){
+        return $this->hasMany(Customer::class);
+    }
+
 }

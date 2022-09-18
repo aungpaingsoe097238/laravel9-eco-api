@@ -3,10 +3,19 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\City;
+use App\Models\Country;
 use Illuminate\Http\Request;
 
 class ApiCountryController extends Controller
 {
+
+    public function responseType($data,$message,$code){
+        return response()->json([
+            'data' => $data,
+            'message' => $message,
+        ],$code);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +23,8 @@ class ApiCountryController extends Controller
      */
     public function index()
     {
-        //
+        $countries = Country::all();
+        return $this->responseType($countries,'success',200);
     }
 
     /**
@@ -25,7 +35,13 @@ class ApiCountryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:3|unique:states,name|string'
+        ]);
+        $country = new Country();
+        $country->name = $request->name;
+        $country->save();
+        return $this->responseType($country,'success',200);
     }
 
     /**
@@ -36,7 +52,13 @@ class ApiCountryController extends Controller
      */
     public function show($id)
     {
-        //
+        $country = Country::find($id);
+
+        if(!$country){
+            return response()->json([],403);
+        }
+
+        return $this->responseType($country,'success',200);
     }
 
     /**
@@ -48,7 +70,16 @@ class ApiCountryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $country = Country::find($id);
+        if(!$country){
+            return response()->json([],403);
+        }
+        $request->validate([
+            'name' => 'required|unique:states,name,'.$country->id.'|min:3'
+        ]);
+        $country->name = $request->name;
+        $country->update();
+        return $this->responseType($country,'success',200);
     }
 
     /**
@@ -59,6 +90,11 @@ class ApiCountryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $country = Country::find($id);
+        if(!$country){
+            return response()->json([],403);
+        }
+        $country->delete();
+        return $this->responseType($country,'Data Successfully Deleted',200);
     }
 }

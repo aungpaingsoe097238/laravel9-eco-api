@@ -22,4 +22,8 @@ Route::prefix('v1')->group(function (){
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::post('logout',[ApiUserController::class,'logout'])->name('api.logout');
+    Route::apiResource('state',ApiStateController::class);
+    Route::apiResource('country',ApiCountryController::class);
+    Route::apiResource('city',ApiCityController::class);
+    Route::apiResource('customer',ApiCustomerController::class);
 });

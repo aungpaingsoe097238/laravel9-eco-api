@@ -68,7 +68,7 @@ class ApiCustomerController extends Controller
      */
     public function show($id)
     {
-        $customer = Customer::find($id);
+        $customer = Customer::find($id)->with('user','state','country','city')->get();
         if(!$customer){
             return response()->json([],403);
         }

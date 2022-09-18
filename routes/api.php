@@ -26,4 +26,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('country',ApiCountryController::class);
     Route::apiResource('city',ApiCityController::class);
     Route::apiResource('customer',ApiCustomerController::class);
+    Route::apiResource('product',ApiProductController::class);
+    Route::apiResource('stock',ApiStockController::class);
+    Route::apiResource('image',ApiImageController::class);
 });

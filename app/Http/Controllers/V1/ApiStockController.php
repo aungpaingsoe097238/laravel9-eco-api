@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Photo;
+use App\Models\Stock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class ApiStockController extends Controller
 {
@@ -14,7 +18,12 @@ class ApiStockController extends Controller
      */
     public function index()
     {
-        //
+        $stocks = Stock::with('product')->get();
+
+        return response()->json([
+           'data' => $stocks,
+           'message' => 'success'
+        ],200);
     }
 
     /**
@@ -25,7 +34,48 @@ class ApiStockController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'price' => 'required|numeric|min:1',
+            'quantity' => 'required|numeric|min:1',
+            'product_id' => 'required|numeric|exists:products,id',
+            'photo' => 'required',
+            'photo.*' => 'required|file|mimes:jpg,png',
+        ]);
+
+        $stock = new Stock();
+        $stock->price = $request->price;
+        $stock->quantity = $request->quantity;
+        $stock->product_id = $request->product_id;
+        $stock->save();
+
+        // Create image
+        if(!Storage::exists('public/thumbnail')){
+            Storage::makeDirectory('public/thumbnail');
+        }
+
+        if($request->hasFile('photo')){
+            foreach($request->file('photo') as $photo){
+                $newName = uniqid().'_photo.'.$photo->extension();
+                $photo->storeAs('public/photos',$newName);
+                $img = Image::make($photo);
+                $img->fit('500','500');
+                $img->save('storage/thumbnail/'.$newName);
+
+                // save to Database
+                $photo = new Photo();
+                $photo->name = $newName;
+                $photo->save();
+
+                $stock->photos()->attach($photo->id);
+
+            }
+        }
+
+        return response()->json([
+           'data' => $stock,
+           'message' => 'success'
+        ],200);
+
     }
 
     /**
@@ -36,7 +86,17 @@ class ApiStockController extends Controller
      */
     public function show($id)
     {
-        //
+        $stock = Stock::find($id);
+
+        if(!$stock){
+            return response()->json([],403);
+        }
+
+        return response()->json([
+            'data' => $stock,
+            'message' => 'success'
+        ],200);
+
     }
 
     /**
@@ -48,7 +108,65 @@ class ApiStockController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $stock = Stock::find($id);
+
+        if(!$stock){
+            return response()->json([],403);
+        }
+
+        $request->validate([
+            'price' => 'required|numeric|min:1',
+            'quantity' => 'required|numeric|min:1',
+            'product_id' => 'required|numeric|exists:products,id',
+            'photo' => 'nullable',
+            'photo.*' => 'nullable|file|mimes:jpg,png',
+        ]);
+
+        $stock->price = $request->price;
+        $stock->quantity = $request->quantity;
+        $stock->product_id = $request->product_id;
+        $stock->update();
+
+        // Create image
+        if(!Storage::exists('public/thumbnail')){
+            Storage::makeDirectory('public/thumbnail');
+        }
+
+        if($request->hasFile('photo')){
+
+            // Delete Old Data
+            if($stock->photos){
+                foreach ($stock->photos as $photo){
+                    $stock->photos()->detach($photo->id);
+                    Photo::where('id',$photo->id)->delete();
+                    Storage::delete('public/storage/photos/'.$photo->name);
+                    Storage::delete('public/storage/thumbnail/'.$photo->name);
+                }
+            }
+
+            foreach($request->file('photo') as $photo){
+                $newName = uniqid().'_photo.'.$photo->extension();
+                $photo->storeAs('public/photos',$newName);
+                $img = Image::make($photo);
+                $img->fit('500','500');
+                $img->save('storage/thumbnail/'.$newName);
+
+                // save to Database
+                $photo = new Photo();
+                $photo->name = $newName;
+                $photo->save();
+
+                $stock->photos()->attach($photo->id);
+
+            }
+        }
+
+
+
+        return response()->json([
+            'data' => $stock,
+            'message' => 'success'
+        ],200);
     }
 
     /**
@@ -59,6 +177,11 @@ class ApiStockController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $stock = Stock::find($id);
+        if(!$stock){
+            return response()->json([],404);
+        }
+        $stock->delete();
+        return response()->json([],403);
     }
 }

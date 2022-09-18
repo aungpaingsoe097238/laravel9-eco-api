@@ -9,8 +9,14 @@ class Stock extends Model
 {
     use HasFactory;
 
-    public function products(){
-        return $this->belongsToMany(Product::class);
+    protected $with = ['photos'];
+
+    public function product(){
+        return $this->belongsTo(Product::class);
+    }
+
+    public function photos(){
+        return $this->belongsToMany(Photo::class,'photos_stocks');
     }
 
 }

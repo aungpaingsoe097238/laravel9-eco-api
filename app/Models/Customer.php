@@ -9,6 +9,8 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $with = ['user','state','country','city'];
+
     public function user(){
         return $this->belongsTo(User::class);
     }

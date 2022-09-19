@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +18,7 @@ class ApiCustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::with('user','state','country','city')->get();
+        $customers = Customer::all();
 
         return response()->json([
             'data' => $customers,
@@ -30,16 +32,9 @@ class ApiCustomerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateCustomerRequest $request)
     {
-        $request->validate([
-            'state_id' => 'required|numeric|exists:states,id',
-            'country_id' => 'required|numeric|exists:countries,id',
-            'city_id' => 'required|numeric|exists:cities,id',
-            'address' => 'required|string',
-            'profile_image' => 'nullable|mimes:jpg,png'
-        ]);
-
+        return $request;
         $customer = new Customer();
         $customer->user_id = Auth::id();
         $customer->state_id = $request->state_id;
@@ -85,21 +80,13 @@ class ApiCustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCustomerRequest $request, $id)
     {
         $customer = Customer::find($id);
 
         if(!$customer){
             return response()->json([],403);
         }
-
-        $request->validate([
-            'state_id' => 'required|numeric|exists:states,id',
-            'country_id' => 'required|numeric|exists:countries,id',
-            'city_id' => 'required|numeric|exists:cities,id',
-            'address' => 'required|string',
-            'profile_image' => 'nullable|mimes:jpg,png'
-        ]);
 
         $customer->user_id = Auth::id();
         $customer->state_id = $request->state_id;

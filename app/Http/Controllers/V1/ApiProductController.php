@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Photo;
 use App\Models\Product;
 use App\Models\Stock;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Carbon\Exceptions\Exception;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 
 class ApiProductController extends Controller
@@ -19,12 +22,8 @@ class ApiProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('stocks')->get();
-
-        return response()->json([
-           'data' => $products,
-           'message' => 'success'
-        ],200);
+        $products = Product::latest('id')->with('stocks')->paginate(10);
+        return ProductResource::collection($products);
     }
 
     /**
@@ -33,57 +32,49 @@ class ApiProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateProductRequest $request)
     {
-        $request->validate([
-            'name' => 'required|min:3|unique:products,name|string',
-            'description' => 'required|min:3',
-            'price' => 'required|numeric|min:1',
-            'quantity' => 'required|numeric|min:1',
-            'photo' => 'required',
-            'photo.*' => 'required|file|mimes:jpg,png',
-        ]);
 
-        // Create Product
-        $product = new Product();
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->save();
+        try {
+            DB::beginTransaction();
 
-        // Create Stock
-        $stock = new Stock();
-        $stock->price = $request->price;
-        $stock->quantity = $request->quantity;
-        $stock->product_id = $product->id;
-        $stock->save();
+            // Create Product
+            $product = new Product();
+            $product->name = $request->name;
+            $product->description = $request->description;
+            $product->save();
 
-        // Create image
-        if(!Storage::exists('public/thumbnail')){
-            Storage::makeDirectory('public/thumbnail');
-        }
+            // Create Stock
+            $stock = new Stock();
+            $stock->price = $request->price;
+            $stock->quantity = $request->quantity;
+            $stock->product_id = $product->id;
+            $stock->save();
 
-        if($request->hasFile('photo')){
-            foreach($request->file('photo') as $photo){
-                $newName = uniqid().'_photo.'.$photo->extension();
-                $photo->storeAs('public/photos',$newName);
-                $img = Image::make($photo);
-                $img->fit('500','500');
-                $img->save('storage/thumbnail/'.$newName);
-
-                // save to Database
-                $photo = new Photo();
-                $photo->name = $newName;
-                $photo->save();
-
-                $stock->photos()->attach($photo->id);
-
+            if ($request->hasFile('photo')) {
+                foreach ($request->file('photo') as $photo) {
+                    $newName = uniqid() . '_photo.' . $photo->extension();
+                    $photo->storeAs('public/photos', $newName);
+                    $img = Image::make($photo);
+                    $img->fit('500', '500');
+                    $img->save('storage/thumbnail/' . $newName);
+                    // save to Database
+                    $photo = new Photo();
+                    $photo->name = $newName;
+                    $photo->save();
+                    $stock->photos()->attach($photo->id);
+                }
             }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
         }
 
         return response()->json([
-           'data' => $product,
-           'message' => 'success'
-        ],200);
+            'data' => $product,
+            'message' => 'success',
+        ], 200);
     }
 
     /**
@@ -94,16 +85,13 @@ class ApiProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id)->with('stocks')->get();
+        $product = Product::find($id)->with('stocks')->first();
 
-        if(!$product){
-            return response()->json([],403);
+        if (!$product) {
+            return response()->json([], 403);
         }
 
-        return response()->json([
-            'data' => $product,
-            'message' => 'success'
-        ],200);
+        return new ProductResource($product);
 
     }
 
@@ -114,18 +102,13 @@ class ApiProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
         $product = Product::find($id);
 
-        if(!$product){
-            return response()->json([],403);
+        if (!$product) {
+            return response()->json([], 403);
         }
-
-        $request->validate([
-            'name' => 'required|min:3|unique:products,name,'.$product->id.'|string',
-            'description' => 'required|min:3',
-        ]);
 
         $product->name = $request->name;
         $product->description = $request->description;
@@ -133,8 +116,8 @@ class ApiProductController extends Controller
 
         return response()->json([
             'data' => $product,
-            'message' => 'success'
-        ],200);
+            'message' => 'success',
+        ], 200);
     }
 
     /**
@@ -150,8 +133,8 @@ class ApiProductController extends Controller
 
         return response()->json([
             'data' => $product,
-            'message' => 'success'
-        ],200);
+            'message' => 'success',
+        ], 200);
 
     }
 }

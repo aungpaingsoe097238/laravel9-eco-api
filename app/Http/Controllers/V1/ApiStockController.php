@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Http\Controllers\Controller;
+use Exception;
 use App\Models\Photo;
 use App\Models\Stock;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\CreateStockRequest;
+use App\Http\Resources\StockResource;
 
 class ApiStockController extends Controller
 {
@@ -18,12 +22,8 @@ class ApiStockController extends Controller
      */
     public function index()
     {
-        $stocks = Stock::with('product')->get();
-
-        return response()->json([
-           'data' => $stocks,
-           'message' => 'success'
-        ],200);
+        $stocks = Stock::all();
+        return StockResource::collection($stocks);
     }
 
     /**
@@ -32,43 +32,36 @@ class ApiStockController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateStockRequest $request)
     {
-        $request->validate([
-            'price' => 'required|numeric|min:1',
-            'quantity' => 'required|numeric|min:1',
-            'product_id' => 'required|numeric|exists:products,id',
-            'photo' => 'required',
-            'photo.*' => 'required|file|mimes:jpg,png',
-        ]);
 
-        $stock = new Stock();
-        $stock->price = $request->price;
-        $stock->quantity = $request->quantity;
-        $stock->product_id = $request->product_id;
-        $stock->save();
+        try{
+            DB::transaction();
 
-        // Create image
-        if(!Storage::exists('public/thumbnail')){
-            Storage::makeDirectory('public/thumbnail');
-        }
+            $stock = new Stock();
+            $stock->price = $request->price;
+            $stock->quantity = $request->quantity;
+            $stock->product_id = $request->product_id;
+            $stock->save();
 
-        if($request->hasFile('photo')){
-            foreach($request->file('photo') as $photo){
-                $newName = uniqid().'_photo.'.$photo->extension();
-                $photo->storeAs('public/photos',$newName);
-                $img = Image::make($photo);
-                $img->fit('500','500');
-                $img->save('storage/thumbnail/'.$newName);
-
-                // save to Database
-                $photo = new Photo();
-                $photo->name = $newName;
-                $photo->save();
-
-                $stock->photos()->attach($photo->id);
-
+            if($request->hasFile('photo')){
+                foreach($request->file('photo') as $photo){
+                    $newName = uniqid().'_photo.'.$photo->extension();
+                    $photo->storeAs('public/photos',$newName);
+                    $img = Image::make($photo);
+                    $img->fit('500','500');
+                    $img->save('storage/thumbnail/'.$newName);
+                    // save to Database
+                    $photo = new Photo();
+                    $photo->name = $newName;
+                    $photo->save();
+                    $stock->photos()->attach($photo->id);
+                }
             }
+
+            DB::commit();
+        }catch(Exception $ex){
+            DB::rollBack();
         }
 
         return response()->json([
@@ -114,14 +107,6 @@ class ApiStockController extends Controller
             return response()->json([],403);
         }
 
-        $request->validate([
-            'price' => 'required|numeric|min:1',
-            'quantity' => 'required|numeric|min:1',
-            'product_id' => 'required|numeric|exists:products,id',
-            'photo' => 'nullable',
-            'photo.*' => 'nullable|file|mimes:jpg,png',
-        ]);
-
         $stock->price = $request->price;
         $stock->quantity = $request->quantity;
         $stock->product_id = $request->product_id;
@@ -160,8 +145,6 @@ class ApiStockController extends Controller
 
             }
         }
-
-
 
         return response()->json([
             'data' => $stock,

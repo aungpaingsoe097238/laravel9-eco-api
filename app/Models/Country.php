@@ -9,8 +9,6 @@ class Country extends Model
 {
     use HasFactory;
 
-    protected $with = ['customers'];
-
     public function customers(){
         return $this->hasMany(Customer::class);
     }

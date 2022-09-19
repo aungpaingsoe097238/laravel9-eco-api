@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
 
-    protected $with = ['photos'];
+    protected $with = ['photos','product'];
 
     public function product(){
         return $this->belongsTo(Product::class);

@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ApiCustomerController;
 use App\Http\Controllers\V1\ApiCityController;
 use App\Http\Controllers\V1\ApiCountryController;
-use App\Http\Controllers\V1\ApiImageController;
+use App\Http\Controllers\V1\ApiPhotoController;
 use App\Http\Controllers\V1\ApiProductController;
 use App\Http\Controllers\V1\ApiStateController;
 use App\Http\Controllers\V1\ApiStockController;
@@ -28,5 +28,5 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('customer',ApiCustomerController::class);
     Route::apiResource('product',ApiProductController::class);
     Route::apiResource('stock',ApiStockController::class);
-    Route::apiResource('image',ApiImageController::class);
+    Route::apiResource('photo',ApiPhotoController::class);
 });

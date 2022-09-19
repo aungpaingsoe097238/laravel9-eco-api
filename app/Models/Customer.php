@@ -10,6 +10,7 @@ class Customer extends Model
     use HasFactory;
 
     protected $with = ['user','state','country','city'];
+    protected $fillable = ['user_id','state_id','country_id','city_id','profile_image','address'];
 
     public function user(){
         return $this->belongsTo(User::class);

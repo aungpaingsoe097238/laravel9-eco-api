@@ -3,7 +3,15 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Country;
 use Illuminate\Database\Seeder;
+use Database\Seeders\CitySeeder;
+use Database\Seeders\RoleSeeder;
+use Database\Seeders\UserSeeder;
+use Database\Seeders\StateSeeder;
+use Database\Seeders\CountrySeeder;
+use Database\Seeders\AdminUserSeeder;
 use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
@@ -22,13 +30,16 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        $this->call(UserSeeder::class);
+        $this->call(CitySeeder::class);
+        $this->call(CountrySeeder::class);
+        $this->call(StateSeeder::class);
+        $this->call(RoleSeeder::class);
+        $this->call(AdminUserSeeder::class);
 
         // Create Foler For Images
         if(!Storage::exists('public/thumbnail')){
             Storage::makeDirectory('public/thumbnail');
         }
-
 
     }
 }

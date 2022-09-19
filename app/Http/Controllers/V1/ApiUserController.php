@@ -3,23 +3,31 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ApiUserController extends Controller
 {
-    public function register(Request $request){
-        $request->validate([
-            'name' => 'required|min:3',
-            'email' => 'required|email',
-            'password' => 'required|confirmed'
-        ]);
+    public function register(CreateUserRequest $request){
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => \Hash::make($request->password)
         ]);
+
+        // Create Role
+        $user->roles()->attach(['2']);
+
+        // Create Customers
+        $user->customer()->save(new Customer([
+            'user_id' => $user->id,
+        ]));
+
         if(Auth::attempt($request->only(['email','password']))){
             $token = Auth::user()->createToken("phone")->plainTextToken;
             return response()->json([
@@ -28,14 +36,12 @@ class ApiUserController extends Controller
                 'token' => $token,
             ],200);
         }
+
         return response()->json([],403);
+
     }
 
-    public function login(Request $request){
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+    public function login(UpdateUserRequest $request){
         if(Auth::attempt($request->only(['email','password']))){
             $token = Auth::user()->createToken("phone")->plainTextToken;
             return response()->json([
@@ -49,6 +55,9 @@ class ApiUserController extends Controller
 
     public function logout(){
         Auth::user()->currentAccessToken()->delete();
-        return response()->json([],204);
+        return response()->json([
+            'data' => 'User Logout Successfully',
+            'message' => 'success'
+        ],200);
     }
 }

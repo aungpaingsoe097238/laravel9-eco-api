@@ -18,7 +18,7 @@ class ApiCustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::all();
+        $customers = Customer::latest('id')->paginate(10);
 
         return response()->json([
             'data' => $customers,
@@ -34,25 +34,7 @@ class ApiCustomerController extends Controller
      */
     public function store(CreateCustomerRequest $request)
     {
-        return $request;
-        $customer = new Customer();
-        $customer->user_id = Auth::id();
-        $customer->state_id = $request->state_id;
-        $customer->country_id = $request->country_id;
-        $customer->city_id = $request->city_id;
-        $customer->address = $request->address;
-
-        if($request->hasFile($request->profile_image)){
-            $customer->profile_image = $request->profile_image;
-        }
-
-        $customer->save();
-
-        return response()->json([
-            'data' => $customer,
-            'message' => 'success'
-        ],200);
-
+        //
     }
 
     /**
@@ -63,7 +45,7 @@ class ApiCustomerController extends Controller
      */
     public function show($id)
     {
-        $customer = Customer::find($id)->with('user','state','country','city')->get();
+        $customer = Customer::find($id)->get();
         if(!$customer){
             return response()->json([],403);
         }
@@ -85,17 +67,19 @@ class ApiCustomerController extends Controller
         $customer = Customer::find($id);
 
         if(!$customer){
-            return response()->json([],403);
+            return response()->json([],404);
         }
 
-        $customer->user_id = Auth::id();
+        $customer->user_id = $request->user_id;
         $customer->state_id = $request->state_id;
         $customer->country_id = $request->country_id;
         $customer->city_id = $request->city_id;
         $customer->address = $request->address;
 
-        if($request->hasFile($request->profile_image)){
-            $customer->profile_image = $request->profile_image;
+        if($request->hasFile('profile_image')){
+            $newName = uniqid().'_profile_image.'.$request->file('profile_image')->extension();
+            $request->file('profile_image')->storeAs('public/profile',$newName);
+            $customer->profile_image = $newName;
         }
 
         $customer->update();

@@ -62,7 +62,7 @@ class ApiProductController extends Controller
                     $newName = uniqid() . '_photo.' . $photo->extension();
                     $photo->storeAs('public/photos', $newName);
                     $img = Image::make($photo);
-                    $img->fit('500', '500');
+                    $img->fit('500','500');
                     $img->save('storage/thumbnail/' . $newName);
                     // save to Database
                     $photo = new Photo();

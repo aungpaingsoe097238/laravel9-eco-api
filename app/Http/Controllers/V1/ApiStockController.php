@@ -41,7 +41,7 @@ class ApiStockController extends Controller
     {
 
         try{
-            DB::transaction();
+            DB::beginTransaction();
 
             $stock = new Stock();
             $stock->price = $request->price;

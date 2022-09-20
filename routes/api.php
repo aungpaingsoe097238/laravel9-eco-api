@@ -23,6 +23,7 @@ Route::prefix('v1')->group(function (){
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::post('logout',[ApiUserController::class,'logout'])->name('api.logout');
     Route::get('users',[ApiUserController::class,'index']);
+    Route::get('users/{id}',[ApiUserController::class,'show']);
     Route::post('assing_role/{id}',[ApiUserController::class,'assignRole']);
     Route::apiResource('stock',ApiStockController::class);
     Route::apiResource('product',ApiProductController::class);

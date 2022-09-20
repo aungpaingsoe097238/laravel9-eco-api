@@ -10,7 +10,10 @@ use Database\Seeders\CitySeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\UserSeeder;
 use Database\Seeders\StateSeeder;
+use Database\Seeders\StockSeeder;
 use Database\Seeders\CountrySeeder;
+use Database\Seeders\ProductSeeder;
+use Database\Seeders\ProfileSeeder;
 use Database\Seeders\AdminUserSeeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,12 +26,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        
+
+
         $this->call(CitySeeder::class);
         $this->call(CountrySeeder::class);
         $this->call(StateSeeder::class);
         $this->call(RoleSeeder::class);
+        $this->call(UserSeeder::class);
         $this->call(AdminUserSeeder::class);
+        $this->call(ProductSeeder::class);
+        $this->call(StockSeeder::class);
+        $this->call(ProfileSeeder::class);
 
         // Create Foler For Images
         if(!Storage::exists('public/thumbnail')){

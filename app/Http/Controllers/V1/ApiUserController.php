@@ -32,6 +32,11 @@ class ApiUserController extends Controller
         return UserResource::collection($users);
     }
 
+    public function show($id){
+        $user = User::find($id)->with('roles','profile')->first();
+        return new UserResource($user);
+    }
+
     public function register(Request $request){
 
         $request->validate([

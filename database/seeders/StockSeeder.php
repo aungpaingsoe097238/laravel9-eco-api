@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
-use App\Models\User;
+use App\Models\Stock;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class RoleSeeder extends Seeder
+class StockSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,12 +15,6 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $roles = ['admin','user'];
-
-        foreach ($roles as $role){
-            Role::create([
-                'name' => $role,
-            ]);
-        }
+        Stock::factory(2000)->create();
     }
 }

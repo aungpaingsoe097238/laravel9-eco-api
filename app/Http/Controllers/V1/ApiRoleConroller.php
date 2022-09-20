@@ -5,6 +5,8 @@ namespace App\Http\Controllers\V1;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RoleResource;
+use App\Http\Resources\UserResource;
 
 class ApiRoleConroller extends Controller
 {
@@ -22,7 +24,7 @@ class ApiRoleConroller extends Controller
     public function index()
     {
         $roles = Role::all();
-        return $roles;
+        return RoleResource::collection($roles);
     }
 
     /**
@@ -45,7 +47,7 @@ class ApiRoleConroller extends Controller
     public function show($id)
     {
         $role = Role::find($id);
-        return $role;
+        return new RoleResource($role);
     }
 
     /**

@@ -5,14 +5,15 @@ namespace App\Http\Controllers\V1;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ProfileResource;
+use App\Http\Requests\UpdateProfileRequest;
 
 class ApiProfileController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('isAdmin',['only' => ['destroy']]);
+        $this->middleware('isAdmin',['only' => ['destroy','store']]);
     }
 
     /**
@@ -23,11 +24,7 @@ class ApiProfileController extends Controller
     public function index()
     {
         $profiles = Profile::latest('id')->paginate(10);
-
-        return response()->json([
-            'data' => $profiles,
-            'message' => 'success'
-        ],200);
+        return ProfileResource::collection($profiles);
     }
 
     /**
@@ -49,14 +46,11 @@ class ApiProfileController extends Controller
      */
     public function show($id)
     {
-        $profile = Profile::find($id)->get();
+        $profile = Profile::find($id)->first();
         if(!$profile){
-            return response()->json([],403);
+            return response()->json([],404);
         }
-        return response()->json([
-            'data' => $profile,
-            'message' => 'success'
-        ],200);
+        return new ProfileResource($profile);
     }
 
     /**
@@ -87,11 +81,7 @@ class ApiProfileController extends Controller
         }
 
         $profile->update();
-
-        return response()->json([
-            'data' => $profile,
-            'message' => 'success'
-        ],200);
+        return new ProfileResource($profile);
     }
 
     /**

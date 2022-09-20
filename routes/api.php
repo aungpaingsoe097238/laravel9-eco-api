@@ -20,6 +20,7 @@ Route::prefix('v1')->group(function (){
 //auth routes
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::post('logout',[ApiUserController::class,'logout'])->name('api.logout');
+    Route::get('users',[ApiUserController::class,'index']);
     Route::apiResource('stock',ApiStockController::class);
     Route::apiResource('product',ApiProductController::class);
     Route::apiResource('photo',ApiPhotoController::class);

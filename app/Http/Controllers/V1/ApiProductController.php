@@ -77,10 +77,7 @@ class ApiProductController extends Controller
             DB::rollBack();
         }
 
-        return response()->json([
-            'data' => $product,
-            'message' => 'success',
-        ], 200);
+        return new ProductResource($product);
     }
 
     /**
@@ -120,10 +117,7 @@ class ApiProductController extends Controller
         $product->description = $request->description;
         $product->update();
 
-        return response()->json([
-            'data' => $product,
-            'message' => 'success',
-        ], 200);
+        return new ProductResource($product);
     }
 
     /**

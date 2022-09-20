@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('state_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('country_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('city_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->string('profile_image')->nullable();
+            $table->string('profile_image')->default('profile.png');
             $table->string('address')->nullable();
             $table->timestamps();
         });

@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 class ApiCountryController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
+    }
+
+
     public function responseType($data,$message,$code){
         return response()->json([
             'data' => $data,

@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class ApiPhotoController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
+    }
+
+
     /**
      * Display a listing of the resource.
      *

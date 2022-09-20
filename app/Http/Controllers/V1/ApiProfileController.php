@@ -5,10 +5,16 @@ namespace App\Http\Controllers\V1;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Support\Facades\Auth;
 
 class ApiProfileController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('isAdmin',['only' => ['destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -60,7 +66,7 @@ class ApiProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProfileRequest $request, $id)
     {
         $profile = Profile::find($id);
 
@@ -68,7 +74,7 @@ class ApiProfileController extends Controller
             return response()->json([],404);
         }
 
-        $profile->user_id = $request->user_id;
+        $profile->user_id = Auth()->id();
         $profile->state_id = $request->state_id;
         $profile->country_id = $request->country_id;
         $profile->city_id = $request->city_id;
@@ -96,14 +102,6 @@ class ApiProfileController extends Controller
      */
     public function destroy($id)
     {
-        $profile = Profile::find($id);
-        if(!$profile){
-            return response()->json([],403);
-        }
-        $profile->delete();
-        return response()->json([
-            'data' => $profile,
-            'message' => 'success'
-        ],200);
+        //
     }
 }

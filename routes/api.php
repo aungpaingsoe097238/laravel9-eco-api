@@ -20,9 +20,9 @@ Route::prefix('v1')->group(function (){
 //auth routes
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::post('logout',[ApiUserController::class,'logout'])->name('api.logout');
-    Route::apiResource('stock',ApiStockController::class)->middleware('isAdmin');
-    Route::apiResource('product',ApiProductController::class)->middleware('isAdmin');
-    Route::apiResource('photo',ApiPhotoController::class)->middleware('isAdmin');
+    Route::apiResource('stock',ApiStockController::class);
+    Route::apiResource('product',ApiProductController::class);
+    Route::apiResource('photo',ApiPhotoController::class);
     Route::apiResource('state',ApiStateController::class);
     Route::apiResource('country',ApiCountryController::class);
     Route::apiResource('city',ApiCityController::class);

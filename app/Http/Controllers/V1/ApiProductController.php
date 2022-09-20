@@ -15,6 +15,12 @@ use Intervention\Image\Facades\Image;
 
 class ApiProductController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *

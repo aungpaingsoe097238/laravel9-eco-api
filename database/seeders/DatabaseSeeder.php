@@ -23,13 +23,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
+        
         $this->call(CitySeeder::class);
         $this->call(CountrySeeder::class);
         $this->call(StateSeeder::class);
@@ -40,6 +34,13 @@ class DatabaseSeeder extends Seeder
         if(!Storage::exists('public/thumbnail')){
             Storage::makeDirectory('public/thumbnail');
         }
+
+        // Clean Storage
+        $photos = Storage::allFiles('public');
+        array_shift($photos);
+        Storage::delete($photos);
+
+        echo 'Storage Cleaned';
 
     }
 }

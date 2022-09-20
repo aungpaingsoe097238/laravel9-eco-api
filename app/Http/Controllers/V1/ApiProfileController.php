@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
-use App\Models\Customer;
+use App\Models\Profile;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class ApiCustomerController extends Controller
+class ApiProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,10 +16,10 @@ class ApiCustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::latest('id')->paginate(10);
+        $profiles = Profile::latest('id')->paginate(10);
 
         return response()->json([
-            'data' => $customers,
+            'data' => $profiles,
             'message' => 'success'
         ],200);
     }
@@ -32,7 +30,7 @@ class ApiCustomerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateCustomerRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -45,12 +43,12 @@ class ApiCustomerController extends Controller
      */
     public function show($id)
     {
-        $customer = Customer::find($id)->get();
-        if(!$customer){
+        $profile = Profile::find($id)->get();
+        if(!$profile){
             return response()->json([],403);
         }
         return response()->json([
-            'data' => $customer,
+            'data' => $profile,
             'message' => 'success'
         ],200);
     }
@@ -62,30 +60,30 @@ class ApiCustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCustomerRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        $customer = Customer::find($id);
+        $profile = Profile::find($id);
 
-        if(!$customer){
+        if(!$profile){
             return response()->json([],404);
         }
 
-        $customer->user_id = $request->user_id;
-        $customer->state_id = $request->state_id;
-        $customer->country_id = $request->country_id;
-        $customer->city_id = $request->city_id;
-        $customer->address = $request->address;
+        $profile->user_id = $request->user_id;
+        $profile->state_id = $request->state_id;
+        $profile->country_id = $request->country_id;
+        $profile->city_id = $request->city_id;
+        $profile->address = $request->address;
 
         if($request->hasFile('profile_image')){
             $newName = uniqid().'_profile_image.'.$request->file('profile_image')->extension();
             $request->file('profile_image')->storeAs('public/profile',$newName);
-            $customer->profile_image = $newName;
+            $profile->profile_image = $newName;
         }
 
-        $customer->update();
+        $profile->update();
 
         return response()->json([
-            'data' => $customer,
+            'data' => $profile,
             'message' => 'success'
         ],200);
     }
@@ -98,13 +96,13 @@ class ApiCustomerController extends Controller
      */
     public function destroy($id)
     {
-        $customer = Customer::find($id);
-        if(!$customer){
+        $profile = Profile::find($id);
+        if(!$profile){
             return response()->json([],403);
         }
-        $customer->delete();
+        $profile->delete();
         return response()->json([
-            'data' => $customer,
+            'data' => $profile,
             'message' => 'success'
         ],200);
     }

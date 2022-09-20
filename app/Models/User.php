@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Profile;
 use App\Models\Customer;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +57,10 @@ class User extends Authenticatable
 
     public function customer(){
         return $this->hasOne(Customer::class);
+    }
+
+    public function profile(){
+        return $this->hasOne(Profile::class);
     }
 
 }

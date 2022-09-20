@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Models\User;
+use App\Models\Profile;
+use App\Models\Customer;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Models\Customer;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ApiUserController extends Controller
 {
@@ -24,7 +25,7 @@ class ApiUserController extends Controller
         $user->roles()->attach(['2']);
 
         // Create Customers
-        $user->customer()->save(new Customer([
+        $user->profile()->save(new Profile([
             'user_id' => $user->id,
         ]));
 

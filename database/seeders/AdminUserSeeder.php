@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Customer;
 use App\Models\User;
-use Illuminate\Database\Seeder;
+use App\Models\Profile;
 use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
 
 class AdminUserSeeder extends Seeder
 {
@@ -32,11 +32,11 @@ class AdminUserSeeder extends Seeder
             'remember_token' => Str::random(10),
         ])->roles()->attach(2);
 
-        User::find(1)->customer()->save(new Customer([
+        User::find(1)->profile()->save(new Profile([
             'user_id' => 1
         ]));
 
-        User::find(2)->customer()->save(new Customer([
+        User::find(2)->profile()->save(new Profile([
             'user_id' => 2
         ]));
 

@@ -24,6 +24,7 @@ class ApiProfileController extends Controller
     public function index()
     {
         $profiles = Profile::latest('id')->paginate(10);
+
         return ProfileResource::collection($profiles);
     }
 

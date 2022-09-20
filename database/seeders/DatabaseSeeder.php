@@ -43,6 +43,11 @@ class DatabaseSeeder extends Seeder
             Storage::makeDirectory('public/thumbnail');
         }
 
+        if(!Storage::exists('public/profile')){
+            Storage::makeDirectory('public/profile');
+        }
+
+
         // Clean Storage
         $photos = Storage::allFiles('public');
         array_shift($photos);

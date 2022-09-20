@@ -11,6 +11,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class ApiUserController extends Controller
 {
@@ -20,16 +21,29 @@ class ApiUserController extends Controller
         $this->middleware('auth',['only'=>'index']);
     }
 
-
-
-    public function index(){
-
-        $users = User::with('roles','profile')->latest('id')->paginate(10);
-        return UserResource::collection($users);
-
+    public function assignRole(Request $request,$id){
+        $request->validate([
+            'role_id' => 'required|exists:roles,id'
+        ]);
+        $user = User::with('roles','profile')->find($id);
+        $user->roles()->detach();
+        $user->roles()->attach($request->role_id);
+        return $user;
+        return new UserResource($user);
     }
 
-    public function register(CreateUserRequest $request){
+    public function index(){
+        $users = User::with('roles','profile')->latest('id')->paginate(10);
+        return UserResource::collection($users);
+    }
+
+    public function register(Request $request){
+
+        $request->validate([
+            'name' => 'required|min:3',
+            'email' => 'required|email',
+            'password' => 'required|confirmed'
+        ]);
 
         $user = User::create([
             'name' => $request->name,
@@ -57,7 +71,13 @@ class ApiUserController extends Controller
 
     }
 
-    public function login(UpdateUserRequest $request){
+    public function login(Request $request){
+
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
         if(Auth::attempt($request->only(['email','password']))){
             $token = Auth::user()->createToken("phone")->plainTextToken;
             return response()->json([

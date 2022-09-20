@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Http\Controllers\Controller;
+use App\Models\Role;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ApiRoleConroller extends Controller
 {
@@ -20,7 +21,8 @@ class ApiRoleConroller extends Controller
      */
     public function index()
     {
-        //
+        $roles = Role::all();
+        return $roles;
     }
 
     /**
@@ -42,7 +44,8 @@ class ApiRoleConroller extends Controller
      */
     public function show($id)
     {
-        //
+        $role = Role::find($id);
+        return $role;
     }
 
     /**

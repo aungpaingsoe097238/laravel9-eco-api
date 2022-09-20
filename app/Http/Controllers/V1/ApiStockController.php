@@ -48,7 +48,7 @@ class ApiStockController extends Controller
             $stock->quantity = $request->quantity;
             $stock->product_id = $request->product_id;
             $stock->save();
-            
+
             // Save Photo
             $photo = new Photo();
             if($request->hasFile('photo')){
@@ -60,10 +60,7 @@ class ApiStockController extends Controller
             DB::rollBack();
         }
 
-        return response()->json([
-           'data' => $stock,
-           'message' => 'success'
-        ],200);
+        return new StockResource($stock);
 
     }
 
@@ -76,15 +73,10 @@ class ApiStockController extends Controller
     public function show($id)
     {
         $stock = Stock::find($id);
-
         if(!$stock){
             return response()->json([],403);
         }
-
-        return response()->json([
-            'data' => $stock,
-            'message' => 'success'
-        ],200);
+        return new StockResource($stock);
 
     }
 
@@ -98,23 +90,15 @@ class ApiStockController extends Controller
     public function update(Request $request, $id)
     {
         $stock = Stock::find($id);
-
         if(!$stock){
             return response()->json([],403);
         }
-
         $stock->price = $request->price;
         $stock->quantity = $request->quantity;
         $stock->product_id = $request->product_id;
         $stock->update();
 
-        // Create image
-        if(!Storage::exists('public/thumbnail')){
-            Storage::makeDirectory('public/thumbnail');
-        }
-
         if($request->hasFile('photo')){
-
             // Delete Old Data
             if($stock->photos){
                 foreach ($stock->photos as $photo){
@@ -124,28 +108,14 @@ class ApiStockController extends Controller
                     Storage::delete('public/storage/thumbnail/'.$photo->name);
                 }
             }
-
-            foreach($request->file('photo') as $photo){
-                $newName = uniqid().'_photo.'.$photo->extension();
-                $photo->storeAs('public/photos',$newName);
-                $img = Image::make($photo);
-                $img->fit('500','500');
-                $img->save('storage/thumbnail/'.$newName);
-
-                // save to Database
-                $photo = new Photo();
-                $photo->name = $newName;
-                $photo->save();
-
-                $stock->photos()->attach($photo->id);
-
+            // Save Photo
+            $photo = new Photo();
+            if($request->hasFile('photo')){
+                $photo->savePhotos($request->file('photo'),$stock);
             }
         }
 
-        return response()->json([
-            'data' => $stock,
-            'message' => 'success'
-        ],200);
+       return new StockResource($stock);
     }
 
     /**
@@ -161,6 +131,6 @@ class ApiStockController extends Controller
             return response()->json([],404);
         }
         $stock->delete();
-        return response()->json([],403);
+        return new StockResource($stock);
     }
 }

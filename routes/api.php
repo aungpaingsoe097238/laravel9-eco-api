@@ -1,7 +1,9 @@
 <?php
 
+use App\Helper\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\V1\ApiRoleConroller;
 use App\Http\Controllers\V1\ApiCityController;
 use App\Http\Controllers\V1\ApiUserController;
 use App\Http\Controllers\V1\ApiPhotoController;
@@ -10,7 +12,6 @@ use App\Http\Controllers\V1\ApiStockController;
 use App\Http\Controllers\V1\ApiCountryController;
 use App\Http\Controllers\V1\ApiProductController;
 use App\Http\Controllers\V1\ApiProfileController;
-use App\Http\Controllers\V1\ApiRoleConroller;
 
 //public routes
 Route::prefix('v1')->group(function (){
@@ -32,4 +33,3 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('profile',ApiProfileController::class);
     Route::apiResource('role',ApiRoleConroller::class)->only('index','show');
 });
-

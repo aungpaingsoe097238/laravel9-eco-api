@@ -40,7 +40,6 @@ class ApiProductController extends Controller
      */
     public function store(CreateProductRequest $request)
     {
-
         try {
             DB::beginTransaction();
 
@@ -57,19 +56,10 @@ class ApiProductController extends Controller
             $stock->product_id = $product->id;
             $stock->save();
 
-            if ($request->hasFile('photo')) {
-                foreach ($request->file('photo') as $photo) {
-                    $newName = uniqid() . '_photo.' . $photo->extension();
-                    $photo->storeAs('public/photos', $newName);
-                    $img = Image::make($photo);
-                    $img->fit('500','500');
-                    $img->save('storage/thumbnail/' . $newName);
-                    // save to Database
-                    $photo = new Photo();
-                    $photo->name = $newName;
-                    $photo->save();
-                    $stock->photos()->attach($photo->id);
-                }
+            // Save Photo
+            $photo = new Photo();
+            if($request->hasFile('photo')){
+                $photo->savePhotos($request->file('photo'),$stock);
             }
 
             DB::commit();

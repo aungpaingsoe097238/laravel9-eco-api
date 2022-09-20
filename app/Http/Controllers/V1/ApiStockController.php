@@ -48,20 +48,11 @@ class ApiStockController extends Controller
             $stock->quantity = $request->quantity;
             $stock->product_id = $request->product_id;
             $stock->save();
-
+            
+            // Save Photo
+            $photo = new Photo();
             if($request->hasFile('photo')){
-                foreach($request->file('photo') as $photo){
-                    $newName = uniqid().'_photo.'.$photo->extension();
-                    $photo->storeAs('public/photos',$newName);
-                    $img = Image::make($photo);
-                    $img->fit('500','500');
-                    $img->save('storage/thumbnail/'.$newName);
-                    // save to Database
-                    $photo = new Photo();
-                    $photo->name = $newName;
-                    $photo->save();
-                    $stock->photos()->attach($photo->id);
-                }
+                $photo->savePhotos($request->file('photo'),$stock);
             }
 
             DB::commit();

@@ -5,9 +5,12 @@ namespace App\Http\Controllers\V1;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Http\Request;
+use function Termwind\render;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use function PHPSTORM_META\registerArgumentsSet;
 
 class ApiUserController extends Controller
 {
@@ -15,6 +18,13 @@ class ApiUserController extends Controller
     public function __construct()
     {
         $this->middleware('auth',['only'=>'index']);
+    }
+
+    public function index(){
+        $users = User::with('roles','profile')
+        ->search()
+        ->latest('id')->paginate(10);
+        return UserResource::collection($users);
     }
 
     public function assignRole(Request $request,$id){
@@ -25,11 +35,6 @@ class ApiUserController extends Controller
         $user->roles()->detach();
         $user->roles()->attach($request->role_id);
         return new UserResource($user);
-    }
-
-    public function index(){
-        $users = User::with('roles','profile')->latest('id')->paginate(10);
-        return UserResource::collection($users);
     }
 
     public function show($id){

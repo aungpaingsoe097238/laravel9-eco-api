@@ -59,4 +59,12 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
+    public function scopeSearch($query){
+        return $query->when(request('keyword'),function($q){
+            $q  ->where('name', 'like', '%'. request('keyword'). '%')
+                ->orWhere('email', 'like', '%'. request('keyword').'%');
+        });
+    }
+
+
 }

@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\V1;
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\UpdateProductRequest;
@@ -29,6 +28,7 @@ class ApiProductController extends Controller
     public function index()
     {
         $products = Product::latest('id')->with('stocks')->paginate(10);
+    
         return ProductResource::collection($products);
     }
 

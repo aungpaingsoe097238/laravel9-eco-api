@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\State;
+use DB;
 use Illuminate\Http\Request;
 
 class ApiCityController extends Controller

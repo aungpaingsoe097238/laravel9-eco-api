@@ -22,7 +22,7 @@ class ApiCategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::with('products')->get();
         return CategoryResource::collection($categories);
     }
 
@@ -99,7 +99,7 @@ class ApiCategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::find($id);
+        $category = Category::with('products')->find($id);
 
         if(!$category){
             return response()->json([

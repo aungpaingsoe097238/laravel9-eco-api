@@ -27,8 +27,9 @@ class ApiProductController extends Controller
      */
     public function index()
     {
-        $products = Product::latest('id')->with('stocks')->paginate(10);
-    
+        $products = Product::search()
+        ->latest('id')
+        ->with('stocks')->paginate(10);
         return ProductResource::collection($products);
     }
 

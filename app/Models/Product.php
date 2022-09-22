@@ -13,4 +13,12 @@ class Product extends Model
         return $this->hasMany(Stock::class);
     }
 
+    public function scopeSearch($quary){
+        return $quary->when(isset(request()->keyword),function ($q) {
+            $keyword = request()->keyword;
+            $q->where('name', "LIKE", "%$keyword%")
+                ->orWhere('description', "LIKE", "%$keyword%");
+        });
+    }
+
 }

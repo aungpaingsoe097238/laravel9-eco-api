@@ -28,8 +28,9 @@ class ApiProductController extends Controller
     public function index()
     {
         $products = Product::search()
+        ->with('stocks','category')
         ->latest('id')
-        ->with('stocks')->paginate(10);
+        ->paginate(10);
         return ProductResource::collection($products);
     }
 
@@ -48,6 +49,7 @@ class ApiProductController extends Controller
             $product = new Product();
             $product->name = $request->name;
             $product->description = $request->description;
+            $product->category_id = $request->category_id;
             $product->save();
 
             // Create Stock
@@ -79,11 +81,13 @@ class ApiProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id)->with('stocks')->first();
+        $product = Product::with('stocks','category')->find($id);
 
         if (!$product) {
             return response()->json([], 403);
         }
+
+        return $product;
 
         return new ProductResource($product);
 
@@ -106,6 +110,7 @@ class ApiProductController extends Controller
 
         $product->name = $request->name;
         $product->description = $request->description;
+        $product->category_id = $request->category_id;
         $product->update();
 
         return new ProductResource($product);

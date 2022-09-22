@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Country;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 use Database\Seeders\CitySeeder;
 use Database\Seeders\RoleSeeder;
@@ -14,6 +15,7 @@ use Database\Seeders\StockSeeder;
 use Database\Seeders\CountrySeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\ProfileSeeder;
+use Database\Seeders\CategorySeeder;
 use Database\Seeders\AdminUserSeeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,6 +36,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(AdminUserSeeder::class);
+        $this->call(CategorySeeder::class);
         $this->call(ProductSeeder::class);
         $this->call(StockSeeder::class);
         $this->call(ProfileSeeder::class);

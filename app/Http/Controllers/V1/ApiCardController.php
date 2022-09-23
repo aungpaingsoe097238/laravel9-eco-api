@@ -20,16 +20,8 @@ class ApiCardController extends Controller
      */
     public function index()
     {
-
-        // TODO:
-
-        $cards = DB::table('cards')
-        ->where('cards.product_id', '=', 2 )
-        ->get();
-        return $cards;
-        // $cards = Card::with('user','products')->get();
-        // return $cards;
-        // return CardResource::collection($cards);
+         $cards =  Card::all();
+         return CardResource::collection($cards);
     }
 
     /**
@@ -42,9 +34,9 @@ class ApiCardController extends Controller
     {
         $card = new Card();
         $card->quantity = $request->quantity;
-        $card->product_id = $request->product_id;
         $card->user_id = auth()->id();
         $card->save();
+        $card->products()->sync($request->product_id);
 
         return new CardResource($card);
     }
@@ -84,10 +76,9 @@ class ApiCardController extends Controller
                 'message' => 'Card not found'
             ],404);
         }
-
-        $card->product_id = $request->product_id;
         $card->quantity = $request->quantity;
         $card->update();
+        $card->products()->sync($request->product_id);
 
         return new CardResource($card);
     }

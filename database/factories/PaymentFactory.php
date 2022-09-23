@@ -2,15 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Card;
-use App\Models\User;
-use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Card>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Payment>
  */
-class CardFactory extends Factory
+class PaymentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,6 +17,7 @@ class CardFactory extends Factory
     public function definition()
     {
         return [
-         ];
+
+        ];
     }
 }

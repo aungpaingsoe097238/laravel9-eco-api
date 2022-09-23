@@ -25,6 +25,7 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'status_id' => 'required|integer|exists:statuses,id',
+            'payment_id' => 'required|integer|exists:payments,id',
             'address' => 'required',
         ];
     }

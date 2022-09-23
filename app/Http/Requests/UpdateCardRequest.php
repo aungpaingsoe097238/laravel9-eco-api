@@ -25,7 +25,7 @@ class UpdateCardRequest extends FormRequest
     {
         return [
             'quantity' => 'nullable|min:1|max:100',
-            'product_id' => 'required|integer|exists:products,id|unique:products,id,'.$this->route('product')
+            'product_id' => 'required|integer|exists:products,id'
         ];
     }
 }

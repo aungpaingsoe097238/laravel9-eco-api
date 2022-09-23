@@ -2,10 +2,9 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\ProductResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CardResource extends JsonResource
+class OrderResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,9 +16,10 @@ class CardResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'quantity' => $this->quantity,
-            'user' => new UserResource($this->user),
-            'products' => ProductResource::collection($this->products),
+            'name' => $this->name,
+            'payment' => $this->payment,
+            'status' => $this->status,
+            'products' => $this->products
         ];
     }
 }

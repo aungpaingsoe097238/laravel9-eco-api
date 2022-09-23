@@ -18,4 +18,12 @@ class Order extends Model
         return $this->belongsToMany(Product::class,'order_items');
     }
 
+    public function payment(){
+        return $this->belongsTo(Payment::class);
+    }
+
+    public function cards(){
+        return $this->belongsToMany(Card::class,'order_items');
+    }
+
 }

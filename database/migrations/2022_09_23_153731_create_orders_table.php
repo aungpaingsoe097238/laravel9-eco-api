@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('status_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('card_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('payment_id')->constrained()->cascadeOnDelete();
             $table->string('address');
             $table->integer('price');
             $table->timestamps();

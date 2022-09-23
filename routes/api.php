@@ -1,6 +1,7 @@
 <?php
 
 use App\Helper\Helper;
+use App\Http\Controllers\V1\ApiPaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ApiRoleConroller;
@@ -40,5 +41,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('category',ApiCategoryController::class);
     Route::apiResource('status',ApiStatusController::class);
     Route::apiResource('card',ApiCardController::class);
+    Route::apiResource('payment',ApiPaymentController::class);
     Route::apiResource('order',ApiOrderController::class);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Resources\OrderResource;
 use Auth;
 use App\Models\Card;
 use App\Models\Order;
@@ -29,17 +30,25 @@ class ApiOrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
+
+        $card = Card::all();
         $order = new Order();
         $order->user_id = Auth()->id();
         $order->status_id = $request->status_id;
+        $order->payment_id = $request->payment_id;
         $order->address = $request->address;
         $order->price = 200;
+        $order->save();
 
-        $card = Card::with('products')->get();
+        // Card ထဲမှာ data များကို order_items ထဲထည့်
+        $card_items = $card->where('user_id',Auth()->id())->pluck('id');
+        if($card_items !== null){
+            $order->cards()->sync($card_items);
+        }
 
-        return $card;
+        return $order;
 
-        // $order->save();
+        return new OrderResource($order);
 
     }
 

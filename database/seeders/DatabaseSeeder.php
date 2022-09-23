@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProfileSeeder::class);
         $this->call(StatusSeeder::class);
         $this->call(CardSeeder::class);
+        $this->call(PaymentSeeder::class);
 
         // Create Foler For Images
         if(!Storage::exists('public/thumbnail')){

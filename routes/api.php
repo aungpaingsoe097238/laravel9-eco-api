@@ -4,9 +4,9 @@ use App\Helper\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ApiRoleConroller;
+use App\Http\Controllers\V1\ApiCardController;
 use App\Http\Controllers\V1\ApiCityController;
 use App\Http\Controllers\V1\ApiUserController;
-use App\Http\Controllers\V1\ApiOrderController;
 use App\Http\Controllers\V1\ApiPhotoController;
 use App\Http\Controllers\V1\ApiStateController;
 use App\Http\Controllers\V1\ApiStockController;
@@ -38,5 +38,5 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('role',ApiRoleConroller::class)->only('index','show');
     Route::apiResource('category',ApiCategoryController::class);
     Route::apiResource('status',ApiStatusController::class);
-    Route::apiResource('order',ApiOrderController::class);
+    Route::apiResource('card',ApiCardController::class);
 });

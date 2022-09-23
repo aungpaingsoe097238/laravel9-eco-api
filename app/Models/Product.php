@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Order;
 use App\Models\Stock;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,11 @@ class Product extends Model
             $q->where('name', "LIKE", "%$keyword%")
                 ->orWhere('description', "LIKE", "%$keyword%");
         });
+    }
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class,'orders_products');
     }
 
 }

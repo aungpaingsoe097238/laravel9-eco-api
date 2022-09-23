@@ -8,6 +8,7 @@ use App\Models\Status;
 use App\Models\Country;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Database\Seeders\CardSeeder;
 use Database\Seeders\CitySeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\UserSeeder;
@@ -42,6 +43,7 @@ class DatabaseSeeder extends Seeder
         $this->call(StockSeeder::class);
         $this->call(ProfileSeeder::class);
         $this->call(StatusSeeder::class);
+        $this->call(CardSeeder::class);
 
         // Create Foler For Images
         if(!Storage::exists('public/thumbnail')){

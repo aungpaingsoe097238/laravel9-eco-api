@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Card;
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
-class CardSeeder extends Seeder
+class OrderSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +14,6 @@ class CardSeeder extends Seeder
      */
     public function run()
     {
-        Card::factory(10)->create();
+        //
     }
 }

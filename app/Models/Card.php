@@ -11,12 +11,10 @@ class Card extends Model
 {
     use HasFactory;
 
-    public function products(){
-        return $this->belongsToMany(Product::class,'card_items');
-    }
-
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
+
 
 }

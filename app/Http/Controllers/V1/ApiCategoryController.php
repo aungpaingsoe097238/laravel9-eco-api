@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -32,12 +34,8 @@ class ApiCategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|min:3|unique:categories,name'
-        ]);
-
         $category = new Category();
         $category->name = $request->name;
         $category->save();
@@ -71,7 +69,7 @@ class ApiCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCategoryRequest $request, $id)
     {
         $category = Category::find($id);
 
@@ -81,10 +79,6 @@ class ApiCategoryController extends Controller
                 'message' => 'There is no data'
             ],403);
         }
-
-        $request->validate([
-            'name' => 'required|min:3|unique:categories,name,except,id',
-        ]);
 
         $category->name = $request->name;
         return new CategoryResource($category);

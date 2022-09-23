@@ -4,14 +4,17 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Status;
 use App\Models\Country;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
 use Database\Seeders\CitySeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\UserSeeder;
+use Database\Seeders\OrderSeeder;
 use Database\Seeders\StateSeeder;
 use Database\Seeders\StockSeeder;
+use Database\Seeders\StatusSeeder;
 use Database\Seeders\CountrySeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\ProfileSeeder;
@@ -28,8 +31,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-
-
         $this->call(CitySeeder::class);
         $this->call(CountrySeeder::class);
         $this->call(StateSeeder::class);
@@ -40,6 +41,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSeeder::class);
         $this->call(StockSeeder::class);
         $this->call(ProfileSeeder::class);
+        $this->call(StatusSeeder::class);
+        $this->call(OrderSeeder::class);
 
         // Create Foler For Images
         if(!Storage::exists('public/thumbnail')){

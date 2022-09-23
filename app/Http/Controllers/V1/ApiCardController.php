@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Models\Card;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CardResource;
 use App\Http\Requests\StoreCardRequest;
 use App\Http\Requests\UpdateCardRequest;
 
@@ -17,8 +18,8 @@ class ApiCardController extends Controller
      */
     public function index()
     {
-        $cards = Card::with('products','user')->get();
-        return $cards;
+        $cards = Card::all();
+        return CardResource::collection($cards);
     }
 
     /**
@@ -34,7 +35,7 @@ class ApiCardController extends Controller
         $card->user_id = auth()->id();
         $card->save();
         $card->products()->sync($request->products);
-        return $card;
+        return new CardResource($card);
     }
 
     /**
@@ -52,7 +53,7 @@ class ApiCardController extends Controller
                 'message' => 'Card not found'
             ],404);
         }
-        return $card;
+        return new CardResource($card);
     }
 
     /**
@@ -77,7 +78,7 @@ class ApiCardController extends Controller
         $card->products()->sync($request->products);
         $card->update();
 
-        return $card;
+        return new CardResource($card);
     }
 
     /**
@@ -96,6 +97,6 @@ class ApiCardController extends Controller
             ],404);
         }
         $card->delete();
-        return $card;
+        return new CardResource($card);
     }
 }

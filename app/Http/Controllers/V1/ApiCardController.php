@@ -37,7 +37,6 @@ class ApiCardController extends Controller
         $card->user_id = auth()->id();
         $card->save();
         $card->products()->sync($request->product_id);
-
         return new CardResource($card);
     }
 
@@ -51,10 +50,7 @@ class ApiCardController extends Controller
     {
         $card = Card::find($id);
         if(!$card){
-            return response()->json([
-                'data' => [],
-                'message' => 'Card not found'
-            ],404);
+            return notFound();
         }
         return new CardResource($card);
     }
@@ -69,17 +65,12 @@ class ApiCardController extends Controller
     public function update(UpdateCardRequest $request, $id)
     {
         $card = Card::find($id);
-
         if(!$card){
-            return response()->json([
-                'data' => [],
-                'message' => 'Card not found'
-            ],404);
+            return notFound();
         }
         $card->quantity = $request->quantity;
         $card->update();
         $card->products()->sync($request->product_id);
-
         return new CardResource($card);
     }
 
@@ -93,10 +84,7 @@ class ApiCardController extends Controller
     {
         $card = Card::find($id);
         if(!$card){
-            return response()->json([
-                'data' => [],
-                'message' => 'Card not found'
-            ],404);
+            return notFound();
         }
         $card->delete();
         return new CardResource($card);

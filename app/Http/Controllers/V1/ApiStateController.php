@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreStateRequest;
+use App\Http\Requests\UpdateStateRequest;
 use App\Models\State;
 use Illuminate\Http\Request;
 
@@ -13,13 +15,6 @@ class ApiStateController extends Controller
     {
         $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
     }
-
-    public function responseType($data,$message,$code){
-        return response()->json([
-            'data' => $data,
-            'message' => $message,
-        ],$code);
-    }
     /**
      * Display a listing of the resource.
      *
@@ -28,8 +23,7 @@ class ApiStateController extends Controller
     public function index()
     {
         $states = State::all();
-        return $this->responseType($states,'success',200);
-
+        return json($states,'success',200);
     }
 
     /**
@@ -38,18 +32,12 @@ class ApiStateController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreStateRequest $request)
     {
-        $request->validate([
-            'name' => 'required|min:3|unique:states,name|string'
-        ]);
-
         $state = new State();
         $state->name = $request->name;
         $state->save();
-
-        return $this->responseType($state,'success',200);
-
+        return json($state,'success',200);
     }
 
     /**
@@ -61,12 +49,10 @@ class ApiStateController extends Controller
     public function show($id)
     {
         $state = State::find($id);
-
         if(!$state){
-            return response()->json([],403);
+            return notFound();
         }
-
-        return $this->responseType($state,'success',200);
+        return json($state,'success',200);
 
     }
 
@@ -77,22 +63,15 @@ class ApiStateController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateStateRequest $request, $id)
     {
         $state = State::find($id);
-
         if(!$state){
-            return response()->json([],403);
+            return notFound();
         }
-
-        $request->validate([
-            'name' => 'required|unique:states,name,'.$state->id.'|min:3'
-        ]);
-
         $state->name = $request->name;
         $state->update();
-
-        return $this->responseType($state,'success',200);
+        return json($state,'success',200);
     }
 
     /**
@@ -104,8 +83,10 @@ class ApiStateController extends Controller
     public function destroy($id)
     {
         $state = State::find($id);
+        if(!$state){
+           return notFound();
+        }
         $state->delete();
-
-        return $this->responseType($state,'Data Successfully Deleted',200);
+        return json($state,'success',200);
     }
 }

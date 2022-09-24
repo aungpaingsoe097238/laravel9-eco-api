@@ -1,7 +1,7 @@
 <?php
 
 use App\Helper\Helper;
-use App\Http\Controllers\V1\ApiPaymentController;
+use App\Mail\OrderSuccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\V1\ApiRoleConroller;
@@ -14,6 +14,7 @@ use App\Http\Controllers\V1\ApiStateController;
 use App\Http\Controllers\V1\ApiStockController;
 use App\Http\Controllers\V1\ApiStatusController;
 use App\Http\Controllers\V1\ApiCountryController;
+use App\Http\Controllers\V1\ApiPaymentController;
 use App\Http\Controllers\V1\ApiProductController;
 use App\Http\Controllers\V1\ApiProfileController;
 use App\Http\Controllers\V1\ApiCategoryController;
@@ -46,3 +47,4 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('order_price',ApiOrderPriceController::class);
     Route::apiResource('order',ApiOrderController::class);
 });
+

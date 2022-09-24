@@ -11,16 +11,16 @@ class OrderSuccess extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $orderItems;
+    public $order;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($orderItems)
+    public function __construct($order)
     {
-        $this->orderItems = $orderItems;
+        $this->order = $order;
     }
 
     /**
@@ -30,6 +30,9 @@ class OrderSuccess extends Mailable
      */
     public function build()
     {
-        return $this->view('view.orderSuccess');
+        return $this
+        ->from('laravel_eco@gmail.com')
+        ->subject('Hello User!.We get your order')
+        ->view('Mail.orderSuccess');
     }
 }

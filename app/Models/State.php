@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class State extends Model
 {
     use HasFactory;
 
-    public function customers(){
-        return $this->hasMany(Customer::class);
+    public function users(){
+        return $this->hasMany(User::class);
+    }
+
+    public function order_price(){
+        return $this->hasOne(OrderPrice::class);
     }
 
 }

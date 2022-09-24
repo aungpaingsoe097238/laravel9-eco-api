@@ -24,11 +24,12 @@ class UpdateOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'status_id' => 'required|integer|exists:statuses,id',
+            'status_id' => 'nullable|integer|exists:statuses,id',
             'user_id' => 'required|integer|exists:users,id',
+            'state_id' => 'required',
             'payment_id' => 'nullable|integer|exists:payments,id',
             'address' => 'nullable',
-            'products' => 'required',
+            'products' => 'nullable',
             'products*' => 'integer|exists:products,id',
         ];
     }

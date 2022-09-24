@@ -21,6 +21,7 @@ use Database\Seeders\ProductSeeder;
 use Database\Seeders\ProfileSeeder;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\AdminUserSeeder;
+use Database\Seeders\OrderPriceSeeder;
 use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
@@ -44,6 +45,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProfileSeeder::class);
         $this->call(StatusSeeder::class);
         $this->call(CardSeeder::class);
+        $this->call(OrderPriceSeeder::class);
         $this->call(PaymentSeeder::class);
 
         // Create Foler For Images

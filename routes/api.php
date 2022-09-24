@@ -17,6 +17,7 @@ use App\Http\Controllers\V1\ApiCountryController;
 use App\Http\Controllers\V1\ApiProductController;
 use App\Http\Controllers\V1\ApiProfileController;
 use App\Http\Controllers\V1\ApiCategoryController;
+use App\Http\Controllers\V1\ApiOrderPriceController;
 
 //public routes
 Route::prefix('v1')->group(function (){
@@ -42,5 +43,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('status',ApiStatusController::class);
     Route::apiResource('card',ApiCardController::class);
     Route::apiResource('payment',ApiPaymentController::class);
+    Route::apiResource('order_price',ApiOrderPriceController::class);
     Route::apiResource('order',ApiOrderController::class);
 });

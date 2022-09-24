@@ -25,7 +25,7 @@ class ApiOrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
+        $orders = Order::latest('id','desc')->paginate(10);
         return OrderResource::collection($orders);
     }
 
@@ -37,21 +37,31 @@ class ApiOrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-
         $order = new Order();
         $order->user_id = Auth()->id();
         $order->status_id = 1;
         $order->payment_id = $request->payment_id;
         $order->address = $request->address;
-        $order->price = 200;
+        $order->state_id = $request->state_id;
+
+        // State Price
+        $price = DB::table('order_prices')->where('state_id',$request->state_id);
+        if(!$price->count() > 0){
+            $order->price = 100;
+        }
+
+        $order->price = $price->first()->price;
+
         // Card ထဲမှာ data များကို order_items ထဲထည့်
         $card_items = DB::table('cards')->where('user_id',Auth()->id());
         if(!$card_items->count() > 0){
             return response()->json('There is no card data for order');
         }
+
         $order->save();
         $order->products()->sync($card_items->pluck('id'));
         $card_items->delete();
+
         return new OrderResource($order);
     }
 
@@ -86,7 +96,19 @@ class ApiOrderController extends Controller
         }
 
         $order->user_id = $request->user_id;
-        $order->status_id = $request->status_id;
+
+        if($request->has('status_id')){
+            $order->status_id = $request->status_id;
+        }
+
+        if($request->has('state_id')){
+            $order->state_id = $request->state_id;
+            $price = DB::table('order_prices')->where('state_id',$request->state_id);
+            if(!$price->count() > 0){
+                $order->price = 100;
+            }
+            $order->price = $price->first()->price;
+        }
 
         if($request->has('payment_id')){
             $order->payment_id = $request->payment_id;
@@ -96,11 +118,13 @@ class ApiOrderController extends Controller
             $order->address = $request->address;
         }
 
-        $order->price = 200;
         $order->save();
-        $order->products()->sync($request->products);
 
-        return response()->json($order);
+        if($request->has('products')){
+            $order->products()->sync($request->products);
+        }
+
+        return new OrderResource($order);
     }
 
     /**

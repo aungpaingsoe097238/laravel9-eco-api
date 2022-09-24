@@ -13,7 +13,7 @@ class UpdateOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,8 +25,11 @@ class UpdateOrderRequest extends FormRequest
     {
         return [
             'status_id' => 'required|integer|exists:statuses,id',
-            'payment_id' => 'required|integer|exists:payments,id',
-            'address' => 'required',
+            'user_id' => 'required|integer|exists:users,id',
+            'payment_id' => 'nullable|integer|exists:payments,id',
+            'address' => 'nullable',
+            'products' => 'required',
+            'products*' => 'integer|exists:products,id',
         ];
     }
 }

@@ -14,16 +14,16 @@ class Order extends Model
         return $this->belongsTo(Status::class);
     }
 
-    public function products(){
-        return $this->belongsToMany(Product::class,'order_items');
-    }
-
     public function payment(){
         return $this->belongsTo(Payment::class);
     }
 
-    public function cards(){
-        return $this->belongsToMany(Card::class,'order_items');
+    public function products(){
+        return $this->belongsToMany(Product::class,'orders_products');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 
 }

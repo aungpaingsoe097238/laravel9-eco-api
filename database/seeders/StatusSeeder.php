@@ -15,7 +15,7 @@ class StatusSeeder extends Seeder
      */
     public function run()
     {
-        $array = ['Delivery','Waiting Payment','Just Now','Cancel'];
+        $array = ['Delivery','Success','Waiting Payment','Just Now','Cancel'];
 
         foreach ($array as $key => $value)
         {

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use Carbon\Exceptions\Exception;
 use Illuminate\Support\Facades\DB;
 
 class ApiOrderController extends Controller
@@ -37,30 +38,41 @@ class ApiOrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        $order = new Order();
-        $order->user_id = Auth()->id();
-        $order->status_id = 1;
-        $order->payment_id = $request->payment_id;
-        $order->address = $request->address;
-        $order->state_id = $request->state_id;
 
-        // State Price
-        $price = DB::table('order_prices')->where('state_id',$request->state_id);
-        if(!$price->count() > 0){
-            $order->price = 100;
+        try{
+            DB::transaction();
+            
+                $order = new Order();
+                $order->user_id = Auth()->id();
+                $order->status_id = 1;
+                $order->payment_id = $request->payment_id;
+                $order->address = $request->address;
+                $order->state_id = $request->state_id;
+
+                // State Price
+                $price = DB::table('order_prices')->where('state_id',$request->state_id);
+                if(!$price->count() > 0){
+                    $order->price = 100;
+                }
+
+                $order->price = $price->first()->price;
+
+                // Card ထဲမှာ data များကို order_items ထဲထည့်
+                $card_items = DB::table('cards')->where('user_id',Auth()->id());
+                if(!$card_items->count() > 0){
+                    return response()->json('There is no card data for order');
+                }
+
+                $order->save();
+                $order->products()->sync($card_items->pluck('id'));
+                $card_items->delete();
+
+            DB::commits();
+        }catch(Exception $e){
+            DB::rollBack();
         }
 
-        $order->price = $price->first()->price;
 
-        // Card ထဲမှာ data များကို order_items ထဲထည့်
-        $card_items = DB::table('cards')->where('user_id',Auth()->id());
-        if(!$card_items->count() > 0){
-            return response()->json('There is no card data for order');
-        }
-
-        $order->save();
-        $order->products()->sync($card_items->pluck('id'));
-        $card_items->delete();
 
         return new OrderResource($order);
     }

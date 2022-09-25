@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Models\OrderPrice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderPriceResource;
 
@@ -37,7 +38,16 @@ class ApiOrderPriceController extends Controller
         $order_price = new OrderPrice();
         $order_price->price = $request->price;
         $order_price->state_id  = $request->state_id;
-        $order_price->save();
+
+        $is_have_state = OrderPrice::find($request->state_id);
+        if($is_have_state){
+            $is_have_state->price = $request->price;
+            $is_have_state->update();
+            return new OrderPriceResource($is_have_state);
+        }else{
+            $order_price->save();
+        }
+
         return new OrderPriceResource($order_price);
     }
 

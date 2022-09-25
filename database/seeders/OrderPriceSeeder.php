@@ -15,6 +15,13 @@ class OrderPriceSeeder extends Seeder
      */
     public function run()
     {
-        OrderPrice::factory(10)->create();
+        $state_id = [1,2,3,4,5,6,7,8,9,10];
+        foreach ($state_id as $id) {
+            OrderPrice::create([
+                'price' => fake()->numberBetween(100,500),
+                'state_id' => $id
+            ]);
+        }
+
     }
 }

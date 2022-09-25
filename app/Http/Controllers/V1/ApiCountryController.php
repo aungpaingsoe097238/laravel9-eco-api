@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCountryRequest;
+use App\Http\Requests\UpdateCountryRequest;
 use App\Models\City;
 use App\Models\Country;
 use Illuminate\Http\Request;
@@ -15,13 +17,6 @@ class ApiCountryController extends Controller
         $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
     }
 
-
-    public function responseType($data,$message,$code){
-        return response()->json([
-            'data' => $data,
-            'message' => $message,
-        ],$code);
-    }
     /**
      * Display a listing of the resource.
      *
@@ -30,7 +25,7 @@ class ApiCountryController extends Controller
     public function index()
     {
         $countries = Country::all();
-        return $this->responseType($countries,'success',200);
+        return json($countries,'success',200);
     }
 
     /**
@@ -39,15 +34,12 @@ class ApiCountryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCountryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|min:3|unique:states,name|string'
-        ]);
         $country = new Country();
         $country->name = $request->name;
         $country->save();
-        return $this->responseType($country,'success',200);
+        return json($country,'success',200);
     }
 
     /**
@@ -59,12 +51,10 @@ class ApiCountryController extends Controller
     public function show($id)
     {
         $country = Country::find($id);
-
         if(!$country){
-            return response()->json([],403);
+            return notFound();
         }
-
-        return $this->responseType($country,'success',200);
+        return json($country,'success',200);
     }
 
     /**
@@ -74,18 +64,15 @@ class ApiCountryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCountryRequest $request, $id)
     {
         $country = Country::find($id);
         if(!$country){
-            return response()->json([],403);
+            return notFound();
         }
-        $request->validate([
-            'name' => 'required|unique:states,name,'.$country->id.'|min:3'
-        ]);
         $country->name = $request->name;
         $country->update();
-        return $this->responseType($country,'success',200);
+        return json($country,'success',200);
     }
 
     /**
@@ -98,9 +85,9 @@ class ApiCountryController extends Controller
     {
         $country = Country::find($id);
         if(!$country){
-            return response()->json([],403);
+            return notFound();
         }
         $country->delete();
-        return $this->responseType($country,'Data Successfully Deleted',200);
+        return json($country,'success',200);
     }
 }

@@ -10,9 +10,10 @@ use App\Models\Category;
 
 class ApiCategoryController extends Controller
 {
-
+    public $with;
     public function __construct()
     {
+        $this->with = ['products'];
         $this->middleware('isAdmin');
     }
 
@@ -23,7 +24,7 @@ class ApiCategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::with('products')->get();
+        $categories = Category::with($this->with)->get();
         return CategoryResource::collection($categories);
     }
 
@@ -82,7 +83,7 @@ class ApiCategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::with('products')->find($id);
+        $category = Category::with($this->with)->find($id);
         if(!$category){
             return notFound();
         }

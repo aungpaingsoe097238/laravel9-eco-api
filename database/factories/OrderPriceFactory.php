@@ -18,8 +18,7 @@ class OrderPriceFactory extends Factory
     public function definition()
     {
         return [
-            'price' => fake()->numberBetween(100,500),
-            'state_id' => State::inRandomOrder()->first()->id,
+
         ];
     }
 }

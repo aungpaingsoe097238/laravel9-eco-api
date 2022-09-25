@@ -10,6 +10,11 @@ class OrderPrice extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'price' ,
+        'state_id'
+    ];
+
     public function state(){
         return $this->belongsTo(State::class);
     }

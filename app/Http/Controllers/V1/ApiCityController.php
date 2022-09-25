@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCityRequest;
+use App\Http\Requests\StoreCityResource;
+use App\Http\Requests\UpdateCityRequest;
+use App\Http\Requests\UpdateCityResource;
 use App\Models\City;
 use App\Models\State;
 use DB;
@@ -10,19 +14,12 @@ use Illuminate\Http\Request;
 
 class ApiCityController extends Controller
 {
-
+    public $with;
     public function __construct()
     {
+        $this->with = ['customers'];
         $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
     }
-
-    public function responseType($data,$message,$code){
-        return response()->json([
-            'data' => $data,
-            'message' => $message,
-        ],$code);
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -30,8 +27,8 @@ class ApiCityController extends Controller
      */
     public function index()
     {
-        $cities = City::all();
-        return $this->responseType($cities,'success',200);
+        $cities = City::with($this->with)->get();
+        return json($cities,'success',200);
     }
 
     /**
@@ -40,17 +37,12 @@ class ApiCityController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCityRequest $request)
     {
-        $request->validate([
-            'name' => 'required|min:3|unique:states,name|string'
-        ]);
-
         $city = new City();
         $city->name = $request->name;
         $city->save();
-
-        return $this->responseType($city,'success',200);
+        return json($city,'success',200);
     }
 
     /**
@@ -61,13 +53,11 @@ class ApiCityController extends Controller
      */
     public function show($id)
     {
-        $city = City::find($id);
-
+        $city = City::with($this->with)->find($id);
         if(!$city){
-            return response()->json([],403);
+            return notFound();
         }
-
-        return $this->responseType($city,'success',200);
+        return json($city,'success',200);
     }
 
     /**
@@ -77,22 +67,15 @@ class ApiCityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCityRequest $request, $id)
     {
         $city = City::find($id);
-
         if(!$city){
-            return response()->json([],403);
+            return notFound();
         }
-
-        $request->validate([
-            'name' => 'required|unique:states,name,'.$city->id.'|min:3'
-        ]);
-
         $city->name = $request->name;
         $city->update();
-
-        return $this->responseType($city,'success',200);
+        return json($city,'success',200);
     }
 
     /**
@@ -105,9 +88,9 @@ class ApiCityController extends Controller
     {
         $city = City::find($id);
         if(!$city){
-            return response()->json([],403);
+            return notFound();
         }
         $city->delete();
-        return $this->responseType($city,'Data Successfully Deleted',200);
+        return json($city,'success',200);
     }
 }

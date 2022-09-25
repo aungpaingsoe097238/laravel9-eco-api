@@ -7,7 +7,6 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use Illuminate\Http\Request;
 
 class ApiCategoryController extends Controller
 {
@@ -39,9 +38,7 @@ class ApiCategoryController extends Controller
         $category = new Category();
         $category->name = $request->name;
         $category->save();
-
         return new CategoryResource($category);
-
     }
 
     /**
@@ -54,10 +51,7 @@ class ApiCategoryController extends Controller
     {
         $category = Category::find($id);
         if(!$category){
-            return response()->json([
-                'data' => [],
-                'message' => 'There is no data'
-            ],403);
+            return notFound();
         }
         return new CategoryResource($category);
     }
@@ -72,14 +66,9 @@ class ApiCategoryController extends Controller
     public function update(UpdateCategoryRequest $request, $id)
     {
         $category = Category::find($id);
-
         if(!$category){
-            return response()->json([
-                'data' => [],
-                'message' => 'There is no data'
-            ],403);
+            return notFound();
         }
-
         $category->name = $request->name;
         return new CategoryResource($category);
 
@@ -94,19 +83,10 @@ class ApiCategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::with('products')->find($id);
-
         if(!$category){
-            return response()->json([
-                'data' => [],
-                'message' => 'There is no data'
-            ],403);
+            return notFound();
         }
-
         $category->delete();
-
-        return response()->json([
-            'data' => [],
-            'message' => 'Category deleted successfully'
-        ],200);
+        return new CategoryResource($category);
     }
 }

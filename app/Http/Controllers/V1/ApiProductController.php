@@ -14,9 +14,11 @@ use Intervention\Image\Facades\Image;
 
 class ApiProductController extends Controller
 {
+    public $with;
 
     public function __construct()
     {
+        $this->with = ['stocks','category','orders'];
         $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
     }
 
@@ -28,7 +30,7 @@ class ApiProductController extends Controller
     public function index()
     {
         $products = Product::search()
-        ->with('stocks','category')
+        ->with($this->with)
         ->latest('id')
         ->paginate(10);
         return ProductResource::collection($products);
@@ -69,7 +71,6 @@ class ApiProductController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
         }
-
         return new ProductResource($product);
     }
 
@@ -81,16 +82,11 @@ class ApiProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with('stocks','category')->find($id);
-
+        $product = Product::with($this->with)->find($id);
         if (!$product) {
-            return response()->json([], 403);
+            return notFound();
         }
-
-        return $product;
-
         return new ProductResource($product);
-
     }
 
     /**
@@ -103,16 +99,13 @@ class ApiProductController extends Controller
     public function update(UpdateProductRequest $request, $id)
     {
         $product = Product::find($id);
-
         if (!$product) {
-            return response()->json([], 403);
+            return notFound();
         }
-
         $product->name = $request->name;
         $product->description = $request->description;
         $product->category_id = $request->category_id;
         $product->update();
-
         return new ProductResource($product);
     }
 
@@ -126,11 +119,6 @@ class ApiProductController extends Controller
     {
         $product = Product::find($id);
         $product->delete();
-
-        return response()->json([
-            'data' => $product,
-            'message' => 'success',
-        ], 200);
-
+        return new ProductResource($product);
     }
 }

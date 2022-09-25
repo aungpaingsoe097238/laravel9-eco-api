@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\V1;
 
 use App\Models\Card;
+use App\Models\Stock;
+use Carbon\Exceptions\Exception;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CardResource;
 use App\Http\Requests\StoreCardRequest;
@@ -10,6 +13,13 @@ use App\Http\Requests\UpdateCardRequest;
 
 class ApiCardController extends Controller
 {
+    public $with;
+
+    public function __construct()
+    {
+        $this->with = ['stocks','user'];
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +27,7 @@ class ApiCardController extends Controller
      */
     public function index()
     {
-         $cards =  Card::with('stocks','user')->get();
+         $cards =  Card::with($this->with)->get();
          return CardResource::collection($cards);
     }
 
@@ -29,11 +39,27 @@ class ApiCardController extends Controller
      */
     public function store(StoreCardRequest $request)
     {
-        $card = new Card();
-        $card->quantity = $request->quantity;
-        $card->user_id = auth()->id();
-        $card->save();
-        $card->stocks()->sync($request->stock_id);
+        try{
+            DB::beginTransaction();
+
+            $card = new Card();
+            $card->quantity = $request->quantity;
+            $card->user_id = auth()->id();
+            $stock = Stock::find($request->stock_id);
+
+            if($request->quantity > $stock->quantity){
+                return json([],'There is no items for add to card',400);
+            }else{
+                $card->save();
+                $card->stocks()->sync($request->stock_id);
+                $stock->quantity = $stock->quantity - $request->quantity;
+                $stock->update();
+            }
+
+            DB::commit();
+        }catch(Exception $e){
+            DB::rollBack();
+        }
         return new CardResource($card);
     }
 
@@ -45,7 +71,7 @@ class ApiCardController extends Controller
      */
     public function show($id)
     {
-        $card = Card::find($id);
+        $card = Card::with($this->with)->find($id);
         if(!$card){
             return notFound();
         }

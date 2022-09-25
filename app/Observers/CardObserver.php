@@ -3,6 +3,9 @@
 namespace App\Observers;
 
 use App\Models\Card;
+use App\Mail\CardSuccess;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CardObserver
 {
@@ -14,7 +17,7 @@ class CardObserver
      */
     public function created(Card $card)
     {
-        //
+        // Mail::to($card->user->email)->send(new CardSuccess($stock_quantity));
     }
 
     /**

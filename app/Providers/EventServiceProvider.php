@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Card;
 use App\Models\Order;
+use App\Observers\CardObserver;
 use App\Observers\OrderObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
@@ -29,6 +31,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Card::observe(CardObserver::class);
         Order::observe(OrderObserver::class);
     }
 

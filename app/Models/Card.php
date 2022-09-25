@@ -25,4 +25,5 @@ class Card extends Model
         return $this->belongsToMany(Stock::class,'cards_stocks');
     }
 
+
 }

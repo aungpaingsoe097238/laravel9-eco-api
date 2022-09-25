@@ -19,11 +19,11 @@ class CardSeeder extends Seeder
         Card::create([
             'user_id' => User::inRandomOrder()->first()->id,
             'quantity' => fake()->randomDigitNot(0)
-        ])->products()->sync(1);
+        ])->stocks()->sync(1);
 
         Card::create([
             'user_id' => User::inRandomOrder()->first()->id,
             'quantity' => fake()->randomDigitNot(0)
-        ])->products()->sync(2);
+        ])->stocks()->sync(2);
     }
 }

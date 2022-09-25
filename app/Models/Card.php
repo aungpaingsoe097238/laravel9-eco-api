@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Product;
+use App\Models\Stock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -21,8 +21,8 @@ class Card extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function products(){
-        return $this->belongsToMany(Product::class,'cards_products');
+    public function stocks(){
+        return $this->belongsToMany(Stock::class,'cards_stocks');
     }
 
 }

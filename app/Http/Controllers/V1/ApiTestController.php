@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Exceptions\UserNotFoundException;
 use App\Models\User;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\Throw_;
+use Carbon\Exceptions\Exception;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ApiTestController extends Controller
 {
@@ -16,7 +21,8 @@ class ApiTestController extends Controller
      */
     public function index()
     {
-        return User::all();
+        $users = User::all();
+        return $users;
     }
 
     /**
@@ -38,7 +44,12 @@ class ApiTestController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::where('id',$id)->first();
+        if(!$user){
+            throw new UserNotFoundException();
+        }
+
+        return $user;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Profile;
 use App\Models\User;
@@ -12,18 +13,20 @@ use Illuminate\Support\Facades\DB;
 
 class ApiUserController extends Controller
 {
+    public $with;
 
     public function __construct()
     {
         $this->middleware('isAdmin',['only' => 'index' , 'assiginRole' ,'show']);
+        $this->with = ['roles', 'profile'];
     }
 
     public function index()
     {
-        $users = User::with('roles','profile')
+        $users = User::with($this->with)
         ->search()
         ->latest('id')->paginate(10);
-        return UserResource::collection($users);
+        return json(UserResource::collection($users),'success',200);
     }
 
     public function assignRole(Request $request, $id)
@@ -34,24 +37,17 @@ class ApiUserController extends Controller
         $user = User::find($id);
         $user->roles()->detach();
         $user->roles()->attach($request->role_id);
-        return new UserResource($user);
+        return json(new UserResource($user),'success',200);
     }
 
     public function show($id)
     {
-        $user = User::find($id)->with('roles', 'profile')->first();
-        return new UserResource($user);
+        $user = User::find($id)->with($this->with)->first();
+        return json(new UserResource($user),'success',200);
     }
 
-    public function register(Request $request)
+    public function register(StoreUserRequest $request)
     {
-
-        $request->validate([
-            'name' => 'required|min:3',
-            'email' => 'required|email',
-            'password' => 'required|confirmed',
-        ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -74,7 +70,7 @@ class ApiUserController extends Controller
             ]);
         }
 
-        return response()->json([], 403);
+        return notFound();
 
     }
 
@@ -93,15 +89,11 @@ class ApiUserController extends Controller
                 'data' => new UserResource(User::with('roles', 'profile')->where('id', Auth()->id())->first()),
             ]);
         }
-        return response()->json(['User not found.'], 403);
+        return notFound();
     }
 
     public function logout()
     {
-        Auth::user()->currentAccessToken()->delete();
-        return response()->json([
-            'data' => 'User Logout Successfully',
-            'message' => 'success',
-        ], 200);
+        return json( Auth::user()->currentAccessToken()->delete(),'success',200);
     }
 }

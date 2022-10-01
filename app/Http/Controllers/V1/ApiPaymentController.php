@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Payment;
-use Illuminate\Http\Request;
 
 class ApiPaymentController extends Controller
 {

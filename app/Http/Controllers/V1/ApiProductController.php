@@ -80,9 +80,8 @@ class ApiProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        $product = Product::with($this->with)->find($id);
         if (!$product) {
             return notFound();
         }
@@ -118,6 +117,9 @@ class ApiProductController extends Controller
     public function destroy($id)
     {
         $product = Product::find($id);
+        if(!$product){
+            return notfound();
+        }
         $product->delete();
         return new ProductResource($product);
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Profile;
 use App\Models\Customer;
+use Attribute;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
@@ -25,6 +26,8 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
+    protected $appends = ['register'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -64,6 +67,10 @@ class User extends Authenticatable
             $q  ->where('name', 'like', '%'. request('keyword'). '%')
                 ->orWhere('email', 'like', '%'. request('keyword').'%');
         });
+    }
+
+    public function getRegisterAttribute(){
+        return $this->created_at->diffForHumans();
     }
 
 

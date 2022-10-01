@@ -1,24 +1,25 @@
 <?php
 
-use App\Helper\Helper;
-use App\Mail\OrderSuccess;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\V1\ApiRoleConroller;
-use App\Http\Controllers\V1\ApiCardController;
-use App\Http\Controllers\V1\ApiCityController;
-use App\Http\Controllers\V1\ApiUserController;
-use App\Http\Controllers\V1\ApiOrderController;
-use App\Http\Controllers\V1\ApiPhotoController;
-use App\Http\Controllers\V1\ApiStateController;
-use App\Http\Controllers\V1\ApiStockController;
-use App\Http\Controllers\V1\ApiStatusController;
-use App\Http\Controllers\V1\ApiCountryController;
-use App\Http\Controllers\V1\ApiPaymentController;
-use App\Http\Controllers\V1\ApiProductController;
-use App\Http\Controllers\V1\ApiProfileController;
-use App\Http\Controllers\V1\ApiCategoryController;
-use App\Http\Controllers\V1\ApiOrderPriceController;
+use App\Http\Controllers\V1\{
+    ApiCardController,
+    ApiRoleConroller,
+    ApiCityController,
+    ApiUserController,
+    ApiOrderController,
+    ApiPhotoController,
+    ApiStateController,
+    ApiStockController,
+    ApiStatusController,
+    ApiCountryController,
+    ApiPaymentController,
+    ApiProductController,
+    ApiProfileController,
+    ApiCategoryController,
+    ApiOrderPriceController,
+    ApiTestController
+};
+
 
 //public routes
 Route::prefix('v1')->group(function (){
@@ -46,5 +47,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function(){
     Route::apiResource('payment',ApiPaymentController::class);
     Route::apiResource('order_price',ApiOrderPriceController::class);
     Route::apiResource('order',ApiOrderController::class);
+    Route::apiResource('test',ApiTestController::class);
 });
 

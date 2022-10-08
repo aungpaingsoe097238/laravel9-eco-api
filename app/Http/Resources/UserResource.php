@@ -36,6 +36,7 @@ class UserResource extends JsonResource
             'register_date' => $this->register,
             'roles' => RoleResource::collection($this->roles),
             'profile' => $this->Profile($this->profile),
+            'token' => $this->token
         ];
     }
 }

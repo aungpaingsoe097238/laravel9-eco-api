@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 
 class ApiCountryController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('isAdmin',['only' => ['store','update','destroy']]);

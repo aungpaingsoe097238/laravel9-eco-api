@@ -23,9 +23,7 @@ class ApiProfileController extends Controller
      */
     public function index()
     {
-        $profiles = Profile::latest('id')->paginate(10);
-
-        return ProfileResource::collection($profiles);
+        return ProfileResource::collection(Profile::latest('id')->paginate(10));
     }
 
     /**
@@ -64,7 +62,6 @@ class ApiProfileController extends Controller
     public function update(UpdateProfileRequest $request, $id)
     {
         $profile = Profile::find($id);
-
         if(!$profile){
             return response()->json([],404);
         }

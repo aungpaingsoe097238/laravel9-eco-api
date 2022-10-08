@@ -9,7 +9,6 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ApiUserController extends Controller
 {
@@ -17,16 +16,22 @@ class ApiUserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('isAdmin',['only' => 'index' , 'assiginRole' ,'show']);
+        $this->middleware('isAdmin', ['only' => 'index', 'assiginRole', 'show']);
         $this->with = ['roles', 'profile'];
     }
 
     public function index()
     {
-        $users = User::with($this->with)
-        ->search()
-        ->latest('id')->paginate(10);
-        return json(UserResource::collection($users),'success',200);
+        return json(
+            UserResource::collection(
+                User::with($this->with)
+                    ->search()
+                    ->latest('id')
+                    ->paginate(10)
+            ),
+            'success',
+            200
+        );
     }
 
     public function assignRole(Request $request, $id)
@@ -37,13 +42,13 @@ class ApiUserController extends Controller
         $user = User::find($id);
         $user->roles()->detach();
         $user->roles()->attach($request->role_id);
-        return json(new UserResource($user),'success',200);
+        return json(new UserResource($user), 'success', 200);
     }
 
     public function show($id)
     {
         $user = User::find($id)->with($this->with)->first();
-        return json(new UserResource($user),'success',200);
+        return json(new UserResource($user), 'success', 200);
     }
 
     public function register(StoreUserRequest $request)
@@ -58,42 +63,34 @@ class ApiUserController extends Controller
         $user->roles()->attach(['2']);
 
         // Create Customers
-        $user->profile()->save(new Profile([
-            'user_id' => $user->id,
-        ]));
+        $user->profile()->create(['user_id' => $user->id]);
 
         if (Auth::attempt($request->only(['email', 'password']))) {
-            $token = Auth::user()->createToken("phone")->plainTextToken;
-            return response()->json([
-                'token' => $token,
-                'data' => new UserResource(User::with('roles', 'profile')->where('id', $user->id)->first()),
-            ]);
+            $data = auth()->user();
+            $data['token'] = $user->createToken("phone")->plainTextToken;
+            return new UserResource($data);
         }
 
-        return notFound();
-
+        return json([], 'failed to create user', 401);
     }
 
     public function login(Request $request)
     {
-
-        $request->validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($request->only(['email', 'password']))) {
-            $token = Auth::user()->createToken("phone")->plainTextToken;
-            return response()->json([
-                'token' => $token,
-                'data' => new UserResource(User::with('roles', 'profile')->where('id', Auth()->id())->first()),
-            ]);
+        if (Auth::attempt($credentials)) {
+            $data = Auth::user();
+            $data['token'] = $data->createToken("phone")->plainTextToken;
+            return new UserResource($data);
         }
         return notFound();
     }
 
     public function logout()
     {
-        return json( Auth::user()->currentAccessToken()->delete(),'success',200);
+        return json(Auth::user()->currentAccessToken()->delete(), 'success', 200);
     }
 }

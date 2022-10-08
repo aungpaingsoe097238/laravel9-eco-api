@@ -10,8 +10,6 @@ use App\Models\Product;
 use App\Models\Stock;
 use Carbon\Exceptions\Exception;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\Facades\Image;
-
 class ApiProductController extends Controller
 {
     public $with;

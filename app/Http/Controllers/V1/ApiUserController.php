@@ -5,19 +5,21 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
-use App\Models\Profile;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ApiUserController extends Controller
 {
     public $with;
+    public $userService;
 
-    public function __construct()
+    public function __construct(UserService $userService)
     {
         $this->middleware('isAdmin', ['only' => 'index', 'assiginRole', 'show']);
         $this->with = ['roles', 'profile'];
+        $this->userService = $userService;
     }
 
     public function index()
@@ -40,15 +42,13 @@ class ApiUserController extends Controller
             'role_id' => 'required|exists:roles,id',
         ]);
         $user = User::find($id);
-        $user->roles()->detach();
-        $user->roles()->attach($request->role_id);
+        $this->userService->assignRole($user, $request->role_id);
         return json(new UserResource($user), 'success', 200);
     }
 
     public function show($id)
     {
-        $user = User::find($id)->with($this->with)->first();
-        return json(new UserResource($user), 'success', 200);
+        return json(new UserResource(User::find($id)->with($this->with)->first()), 'success', 200);
     }
 
     public function register(StoreUserRequest $request)
@@ -59,11 +59,7 @@ class ApiUserController extends Controller
             'password' => \Hash::make($request->password),
         ]);
 
-        // Create Role
-        $user->roles()->attach(['2']);
-
-        // Create Customers
-        $user->profile()->create(['user_id' => $user->id]);
+        $this->userService->register($user);
 
         if (Auth::attempt($request->only(['email', 'password']))) {
             $data = auth()->user();
@@ -71,7 +67,7 @@ class ApiUserController extends Controller
             return new UserResource($data);
         }
 
-        return json([], 'failed to create user', 401);
+        return json([], 'failed to create user', 422);
     }
 
     public function login(Request $request)

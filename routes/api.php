@@ -25,6 +25,7 @@ use App\Http\Controllers\V1\{
 Route::prefix('v1')->group(function (){
     Route::post('register',[ApiUserController::class,'register'])->name('api.register');
     Route::post('login',[ApiUserController::class,'login'])->name('api.login');
+    Route::get('users/export/', [UsersController::class, 'export']);
 });
 
 //auth routes

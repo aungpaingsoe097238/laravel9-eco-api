@@ -5,7 +5,6 @@ namespace App\Http\Controllers\V1;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProfileResource;
 use App\Http\Requests\UpdateProfileRequest;
 

@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Services\UserService;
+use App\Exports\UsersExport;
 use Illuminate\Http\Request;
+use App\Services\UserService;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\StoreUserRequest;
 
 class ApiUserController extends Controller
 {
@@ -82,11 +84,17 @@ class ApiUserController extends Controller
             $data['token'] = $data->createToken("phone")->plainTextToken;
             return new UserResource($data);
         }
+        
         return notFound();
     }
 
     public function logout()
     {
         return json(Auth::user()->currentAccessToken()->delete(), 'success', 200);
+    }
+
+    public function export() 
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
     }
 }

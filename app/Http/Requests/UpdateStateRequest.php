@@ -24,7 +24,7 @@ class UpdateStateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required0|min:3|unique:states,name,'.$this->route('state')
+            'name' => 'required|min:3|unique:states,name,'.$this->route('state')
         ];
     }
 }

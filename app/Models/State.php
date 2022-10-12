@@ -10,9 +10,9 @@ class State extends Model
 {
     use HasFactory;
 
-    public function users(){
-        return $this->hasMany(User::class);
-    }
+    protected $fillable = [
+        'name'
+    ];
 
     public function order_price(){
         return $this->hasOne(OrderPrice::class);

@@ -34,8 +34,17 @@ class ApiTestController extends Controller
         // $product = Product::where('name','Dolorum atque commodi vero aut a dolores.')->first();
         // $stocks = $product->stocks()->first();
 
-        $query = DB::table('users')->select('name');
-        $users = $query->addSelect('id')->get();
+        // Add Select
+        // $query = DB::table('users')->select('name');
+        // $users = $query->addSelect('id')->get();
+        
+        // chuck 
+
+        $users = DB::table('users')->orderBy('id')->chunk(5,function($users){
+            foreach($users as $user){
+                dd($user);
+            }
+        });
         return $users;
     }
 

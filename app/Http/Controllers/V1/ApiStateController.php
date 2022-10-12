@@ -5,15 +5,19 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStateRequest;
 use App\Http\Requests\UpdateStateRequest;
+use App\Http\Resources\StateResoruce;
 use App\Models\State;
 use Illuminate\Http\Request;
 
 class ApiStateController extends Controller
 {
 
+    private $with ;
+
     public function __construct()
     {
         $this->middleware('isAdmin',['only' => ['store','update','destroy']]);
+        $this->with = ['order_price'];
     }
     /**
      * Display a listing of the resource.
@@ -22,8 +26,7 @@ class ApiStateController extends Controller
      */
     public function index()
     {
-        $states = State::all();
-        return json($states,'success',200);
+        return json( StateResoruce::collection(State::with($this->with)->get()) ,'success',200);
     }
 
     /**
@@ -34,10 +37,7 @@ class ApiStateController extends Controller
      */
     public function store(StoreStateRequest $request)
     {
-        $state = new State();
-        $state->name = $request->name;
-        $state->save();
-        return json($state,'success',200);
+        return json(new StateResoruce(State::create($request->validated())) ,'success',200);
     }
 
     /**
@@ -69,8 +69,7 @@ class ApiStateController extends Controller
         if(!$state){
             return notFound();
         }
-        $state->name = $request->name;
-        $state->update();
+        $state->update($request->validated());
         return json($state,'success',200);
     }
 
